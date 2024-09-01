@@ -55,15 +55,15 @@
 
         .radio-group label {
             display: inline-block;
-            margin-right: 15px; /* Space between radio buttons */
+            margin-right: 15px;
+        }
+
+        input[type="submit"]:disabled {
+            background-color: grey;
+            cursor: not-allowed;
         }
     </style>
     <script>
-        // Function to detect if the device is mobile
-        function isMobileDevice() {
-            return /Mobi|Android/i.test(navigator.userAgent);
-        }
-
         // Function to get GPS location
         function getLocation() {
             if (navigator.geolocation) {
@@ -77,11 +77,14 @@
         function showPosition(position) {
             document.getElementById("latitude").value = position.coords.latitude;
             document.getElementById("longitude").value = position.coords.longitude;
+
+            // Enable the submit button after getting the location
+            document.getElementById("submit-button").disabled = false;
         }
 
         // Function to handle geolocation errors
         function showError(error) {
-            switch(error.code) {
+            switch (error.code) {
                 case error.PERMISSION_DENIED:
                     alert("User denied the request for Geolocation.");
                     break;
@@ -95,23 +98,27 @@
                     alert("An unknown error occurred.");
                     break;
             }
+
+            // Keep the submit button disabled if there is an error
+            document.getElementById("submit-button").disabled = true;
         }
 
         // Function to submit the form data to Google Sheets
         function submitForm() {
-const data = {
-    name: document.getElementById("name").value,
-    locationInfo: document.getElementById("location-info").value,
-    question1: document.querySelector('input[name="question1"]:checked').value,
-    question2: document.querySelector('input[name="question2"]:checked').value,
-    question3: document.querySelector('input[name="question3"]:checked').value,
-    dropdown2: document.getElementById("dropdown2").value,
-    category: document.getElementById("category").value, // This should match with your doPost
-    subcategory: document.getElementById("subcategory").value, // This should match with your doPost
-    latitude: document.getElementById("latitude").value,
-    longitude: document.getElementById("longitude").value
-};
-	           const url = "https://script.google.com/macros/s/AKfycbzexDTMNS_p-eyMR8F2XDN6LBoy5uObyuZwgWNZxFBGIKgym7sZOKJur3-kUc0Vww_Z/exec"; // Replace with your Google Apps Script URL
+            const data = {
+                name: document.getElementById("name").value,
+                locationInfo: document.getElementById("location-info").value,
+                question1: document.querySelector('input[name="question1"]:checked').value,
+                question2: document.querySelector('input[name="question2"]:checked').value,
+                question3: document.querySelector('input[name="question3"]:checked').value,
+                dropdown2: document.getElementById("dropdown2").value,
+                category: document.getElementById("category").value,
+                subcategory: document.getElementById("subcategory").value,
+                latitude: document.getElementById("latitude").value,
+                longitude: document.getElementById("longitude").value
+            };
+
+            const url = "https://script.google.com/macros/s/AKfycbzexDTMNS_p-eyMR8F2XDN6LBoy5uObyuZwgWNZxFBGIKgym7sZOKJur3-kUc0Vww_Z/exec"; // Replace with your Google Apps Script URL
 
             fetch(url, {
                 method: "POST",
@@ -128,17 +135,20 @@ const data = {
         }
 
         // Call getLocation() on page load
-        window.onload = getLocation;
+        window.onload = function() {
+            getLocation();
+            // Disable the submit button initially
+            document.getElementById("submit-button").disabled = true;
+        }
     </script>
 </head>
 <body>
 
-<img src="https://logos-world.net/imageup/John_Deere/John_Deere-Logo-PNG3.png" alt="Leaping deer logo" width="120" height="75" style="display: block; margin: 0 auto;">
+    <img src="https://logos-world.net/imageup/John_Deere/John_Deere-Logo-PNG3.png" alt="Leaping deer logo" width="120" height="75" style="display: block; margin: 0 auto;">
 
+    <b><h2 style="text-align:center;">Van campaign and 4WD Survey</h2></b>
 
-<b><h2 style="text-align:center;">Van campain and 4WD Survey</h2></b>
-
-<em><h4 style="text-align:center;color:White;"><mark>Attention:</mark>Fill only when you are at the village</h4></em>
+    <em><h4 style="text-align:center;color:White;"><mark>Attention:</mark> Fill only when you are at the village</h4></em>
 
     <form onsubmit="event.preventDefault(); submitForm();">
         <label for="name">Your Name:</label>
@@ -163,25 +173,84 @@ const data = {
             <label for="q2b">No</label>
         </div>
 
-<label><b>Village Category</b></label>
+        <label><b>Village Category</b></label>
         <div class="radio-group">
             <input type="radio" id="q3a" name="question3" value="Gram Panchayati" required>
-            <label for="q3a">Gram panchayati</label>
+            <label for="q3a">Gram Panchayati</label>
             <input type="radio" id="q3b" name="question3" value="Tanda">
             <label for="q3b">Tanda</label>
         </div>
- <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
 
-        .question-box {
-                        margin: 10px 0; /* Margin around the box */
-            
-        }
-    </style>
+        <label for="category">Select District:</label>
+        <select id="category" name="category" onchange="updateSubcategories()">
+            <option value="">Click to select</option>
+            <option value="Adilabad">Adilabad</option>
+            <option value="Bhadradri Kothagudem">Bhadradri Kothagudem</option>
+            <option value="Hyderabad">Hyderabad</option>
+        <option value="Jagitial">Jagitial</option>
+        <option value="Jangoan">Jangoan</option>
+        <option value="Jayashankar Bhupalapally">Jayashankar Bhupalapally</option>
+        <option value="Jogulamba Gadwal">Jogulamba Gadwal</option>
+        <option value="Kamareddy">Kamareddy</option>
+        <option value="Karimnagar">Karimnagar</option>
+        <option value="Khammam">Khammam</option>
+        <option value="Kumuram Bheem">Kumuram Bheem</option>
+        <option value="Mahabubabad">Mahabubabad</option>
+        <option value="Mahabubnagar">Mahabubnagar</option>
+        <option value="Mancherial">Mancherial</option>
+        <option value="Medak">Medak</option>
+        <option value="Medchal Malkajgiri">Medchal Malkajgiri</option>
+        <option value="Mulugu">Mulugu</option>
+        <option value="Nagarkurnool">Nagarkurnool</option>
+        <option value="Nalgonda">Nalgonda</option>
+        <option value="Narayanpet">Narayanpet</option>
+        <option value="Nirmal">Nirmal</option>
+        <option value="Nizamabad">Nizamabad</option>
+        <option value="Others">Others</option>
+        <option value="Peddapalli">Peddapalli</option>
+        <option value="Rajanna Sircilla">Rajanna Sircilla</option>
+        <option value="Ranga Reddy">Ranga Reddy</option>
+        <option value="Sangareddy">Sangareddy</option>
+        <option value="Siddipet">Siddipet</option>
+        <option value="Suryapet">Suryapet</option>
+        <option value="Vikarabad">Vikarabad</option>
+        <option value="Wanaparthy">Wanaparthy</option>
+        <option value="Warangal">Warangal</option>
+        <option value="Warangal (Rural)">Warangal (Rural)</option>
+        <option value="Warangal (Urban)">Warangal (Urban)</option>
+        <option value="Yadadri Bhuvanagiri">Yadadri Bhuvanagiri</option>
+
+        </select>
+
+        <div class="question-box">
+            <label for="subcategory">Select Mandal:</label>
+            <select id="subcategory" name="subcategory">
+                <option value="">Click to Select</option>
+            </select>
+        </div>
+
+        <label for="dropdown2">Approx Total village population:</label>
+        <select id="dropdown2" name="dropdown2" required>
+            <option value="">Select</option>
+            <option value="0-10 Tractors">0-10 Tractors</option>
+            <option value="10-25 Tractors">10-25 Tractors</option>
+            <option value="25-50 Tractors">25-50 Tractors</option>
+            <option value="50+ Tractors">50+ Tractors</option>
+        </select>
+
+        <label for="latitude">Latitude:</label>
+        <input type="text" id="latitude" name="latitude" readonly>
+
+        <label for="longitude">Longitude:</label>
+        <input type="text" id="longitude" name="longitude" readonly>
+
+        <input type="submit" id="submit-button" value="Submit">
+    </form>
+
+<p>మీరు లొకేషన్ ఆన్ చెయ్యక పోయిన (లేదా) లొకేషన్ పర్మిషన్ ఇవ్వక పోయిన "Submit" బటన్ ఆన్ అవ్వదు</p>
+
+<img src="https://duet-cdn.vox-cdn.com/thumbor/0x0:1080x1080/1200x1200/filters:focal(540x540:541x541):no_upscale():format(webp)/cdn.vox-cdn.com/uploads/chorus_asset/file/22728661/image.gif" width="250" height="400" style="display: block; margin: 0 auto;">
+
     <script>
         // Function to populate the second dropdown based on the selection in the first dropdown
         function updateSubcategories() {
@@ -194,7 +263,7 @@ const data = {
 
             // Define subcategories for each category
             const subcategories = {
-                "Adilabad": ["Adilabad", "Bazarhathnoor", "Bela", "Bheempur", "Boath", "Gudihathnoor", "Ichoda", "Inderavelly", "Jainad", "Mavala", "Narnoor", "Neradigonda", "Talamadugu", "Tamsi", "Utnoor"],
+    "Adilabad": ["Adilabad", "Bazarhathnoor", "Bela", "Bheempur", "Boath", "Gudihathnoor", "Ichoda", "Inderavelly", "Jainad", "Mavala", "Narnoor", "Neradigonda", "Talamadugu", "Tamsi", "Utnoor"],
                 "Bhadradri Kothagudem": ["Allapalli", "Aswapuram", "Aswaraopeta", "Bhadrachalam", "Burgampahad", "Chandrugonda", "Cherla", "Dammapeta", "Dummugudem", "Gundala-1", "Julurpad", "Karakagudem", "Kothagudem", "Manuguru", "Mulkalapalle", "Palwancha", "Pinapaka", "Tekulapalle", "Venkatapuram", "Wazeed", "Yellandu"],
                 "Hyderabad": ["Ameerpet", "Golconda", "Khairatabad", "Secunderabad"],
                 "Jagitial": ["Beerpur", "Buggaram", "Dharmapuri", "Gollapalle", "Ibrahimpatnam-1", "Jagtial", "Jagtial Rural", "Kathlapur", "Kodimial", "Koratla", "Mallapur", "Mallial", "Medipalle", "Metpalle", "Pegadapalle", "Raikal", "Sarangapur-2", "Velgatoor"],
@@ -230,7 +299,6 @@ const data = {
 "Warangal (Urban)": ["Atmakur", "Bheemadevarpalle", "Dharmasagar", "Elkathurthi", "Hanamkonda", "Hasanparthy", "Inavole", "Kamalapur", "Khazipet", "Khila Warangal", "Saidapur", "Velair", "Warangal"],
 "Yadadri Bhuvanagiri": ["Addaguduru", "Alair", "Atmakur (M)", "Bhongir", "Bommalaramaram", "Choutuppal", "Gundala-2", "M.Turkapalle", "Motakonduru", "Mothkur", "Narayanapur", "Pochampalle", "Rajapet", "Ramannapeta", "Valigonda", "Yadagirigutta"]
 
-                // Add other categories and subcategories as needed
             };
 
             // Populate the subcategory dropdown based on the selected category
@@ -244,78 +312,8 @@ const data = {
             }
         }
     </script>
-</head>
-<body>
 
-<form>
-    <label for="category">Select District:</label>
-    <select id="category" name="category" onchange="updateSubcategories()">
-        <option value="">Click to select</option>
-        <option value="Adilabad">Adilabad</option>
-        <option value="Bhadradri Kothagudem">Bhadradri Kothagudem</option>
-        <option value="Hyderabad">Hyderabad</option>
-        <option value="Jagitial">Jagitial</option>
-        <option value="Jangoan">Jangoan</option>
-        <option value="Jayashankar Bhupalapally">Jayashankar Bhupalapally</option>
-        <option value="Jogulamba Gadwal">Jogulamba Gadwal</option>
-        <option value="Kamareddy">Kamareddy</option>
-        <option value="Karimnagar">Karimnagar</option>
-        <option value="Khammam">Khammam</option>
-        <option value="Kumuram Bheem">Kumuram Bheem</option>
-        <option value="Mahabubabad">Mahabubabad</option>
-        <option value="Mahabubnagar">Mahabubnagar</option>
-        <option value="Mancherial">Mancherial</option>
-        <option value="Medak">Medak</option>
-        <option value="Medchal Malkajgiri">Medchal Malkajgiri</option>
-        <option value="Mulugu">Mulugu</option>
-        <option value="Nagarkurnool">Nagarkurnool</option>
-        <option value="Nalgonda">Nalgonda</option>
-        <option value="Narayanpet">Narayanpet</option>
-        <option value="Nirmal">Nirmal</option>
-        <option value="Nizamabad">Nizamabad</option>
-        <option value="Others">Others</option>
-        <option value="Peddapalli">Peddapalli</option>
-        <option value="Rajanna Sircilla">Rajanna Sircilla</option>
-        <option value="Ranga Reddy">Ranga Reddy</option>
-        <option value="Sangareddy">Sangareddy</option>
-        <option value="Siddipet">Siddipet</option>
-        <option value="Suryapet">Suryapet</option>
-        <option value="Vikarabad">Vikarabad</option>
-        <option value="Wanaparthy">Wanaparthy</option>
-        <option value="Warangal">Warangal</option>
-        <option value="Warangal (Rural)">Warangal (Rural)</option>
-        <option value="Warangal (Urban)">Warangal (Urban)</option>
-        <option value="Yadadri Bhuvanagiri">Yadadri Bhuvanagiri</option>
-    </select>
 
-    <div class="question-box">
-        <label for="subcategory">Select Mandal:</label>
-        <select id="subcategory" name="subcategory">
-            <option value="">Click to Select</option>
-            <!-- Subcategory options ```html
-            <!-- Subcategory options will be populated based on the selected category -->
-        </select>
-    </div>
 
-     
-        <label for="dropdown2">Approx Total village population:</label>
-        <select id="dropdown2" name="dropdown2" required>
-            <option value="">Select</option>
-            <option value="0-10 Tractors">0-10 Tractors</option>
-            <option value="10-25 Tractors">10-25 Tractors</option>
-            <option value="25-50 Tractors">25-50 Tractors</option>
-            <option value="50+ Tractors">50+ Tractors</option>
-            
-        </select>
-
-        <label for="latitude">Latitude:</label>
-        <input type="text" id="latitude" name="latitude" readonly>
-
-        <label for="longitude">Longitude:</label>
-        <input type="text" id="longitude" name="longitude" readonly>
-
-        <input type="submit" id="submit-button" value="Submit">
-    </form>
-   
-   </body>
+</body>
 </html>
